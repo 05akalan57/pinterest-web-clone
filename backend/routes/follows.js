@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const client = require("../database");
 
-// GET all follows
+// Get all follows
 router.get("/", (req, res) => {
   client
     .query("SELECT * FROM follows")

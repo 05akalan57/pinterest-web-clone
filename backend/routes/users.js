@@ -1,32 +1,43 @@
 const express = require("express");
-const router = express.Router();
 const client = require("../database");
+const { verifyToken } = require("../middleware");
 
-// GET all users
-router.get("/", (req, res) => {
-  client.query("SELECT * FROM users").then((users) => res.send(users.rows));
-});
+const router = express.Router();
 
-// POST a new user
+// Create a user
 router.post("/", (req, res) => {
   const { username, password, email, name } = req.body;
 
   client
-    .query(
-      "INSERT INTO users (username, password, email, name) VALUES ($1, $2, $3, $4)",
-      [username, password, email, name]
-    )
-    .then(() => {
-      client.query("SELECT * FROM users").then((users) => res.send(users.rows));
+    .query("SELECT * FROM users WHERE username = $1", [username])
+    .then((result) => {
+      if (result.rows.length > 0) {
+        res.status(409).send("Username already exists");
+      } else {
+        client
+          .query(
+            "INSERT INTO users (username, password, email, name) VALUES ($1, $2, $3, $4)",
+            [username, password, email, name]
+          )
+          .then(() => {
+            res.status(200).send("User created");
+          });
+      }
     });
 });
 
-// DELETE a user
-router.delete("/", (req, res) => {
-  const { id } = req.body;
+// Delete a user
+router.delete("/:id", verifyToken, (req, res) => {
+  const { id } = req.params;
 
-  client.query("DELETE FROM users WHERE id = $1", [id]).then(() => {
-    client.query("SELECT * FROM users").then((users) => res.send(users.rows));
+  if (req.decoded.id !== id) {
+    return res
+      .status(401)
+      .send("You do not have permission to delete this user.");
+  }
+
+  client.query("DELETE FROM users WHERE username = $1", [id]).then(() => {
+    res.status(200).send("User deleted");
   });
 });
 

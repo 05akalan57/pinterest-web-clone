@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const client = require("../database");
 
-// GET all pin_tags
+// Get all pin_tags
 router.get("/", (req, res) => {
   client
     .query("SELECT * FROM pin_tags")

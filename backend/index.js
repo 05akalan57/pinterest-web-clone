@@ -1,31 +1,45 @@
 const express = require("express");
 const cors = require("cors");
-const app = express();
+const client = require("./database");
+const swaggerUi = require("swagger-ui-express");
 
-const follows = require("./routes/follows");
-const users = require("./routes/users");
-const boards = require("./routes/boards");
-const pins = require("./routes/pins");
-const pin_tags = require("./routes/pin_tags");
-const tags = require("./routes/tags");
-const messages = require("./routes/messages");
+const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use("/follows", follows);
-app.use("/users", users);
-app.use("/boards", boards);
-app.use("/pins", pins);
-app.use("/pin_tags", pin_tags);
-app.use("/tags", tags);
-app.use("/messages", messages);
 
-app.get("/", (req, res) => {
-  res.send(`
-  <div style="text-align: center; margin-top: 100px;">
-    <h1>Backend is running</h1>
-  </div>
-  `);
+app.use("/users", require("./routes/users"));
+app.use("/login", require("./routes/login"));
+app.use("/boards", require("./routes/boards"));
+app.use("/pins", require("./routes/pins"));
+app.use("/tags", require("./routes/tags"));
+app.use("/pin_tags", require("./routes/pin_tags"));
+app.use("/follows", require("./routes/follows"));
+app.use("/messages", require("./routes/messages"));
+
+app.use("/", swaggerUi.serve);
+app.get("/", swaggerUi.setup(require("./swagger.json")));
+
+app.get("/all", (req, res) => {
+  client
+    .query(
+      "SELECT table_name FROM information_schema.tables WHERE table_schema='public'"
+    )
+    .then((result) => {
+      let allData = {};
+
+      result.rows.forEach((table, i) => {
+        allData[table.table_name] = [];
+
+        client.query(`SELECT * FROM ${table.table_name}`).then((data) => {
+          allData[table.table_name] = data.rows;
+
+          if (i === result.rows.length - 1) {
+            res.send(allData);
+          }
+        });
+      });
+    });
 });
 
 app.listen(5000);
