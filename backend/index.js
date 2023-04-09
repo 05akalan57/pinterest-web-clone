@@ -1,45 +1,45 @@
-const express = require("express");
-const cors = require("cors");
-const client = require("./database");
-const swaggerUi = require("swagger-ui-express");
+const express = require('express')
+const cors = require('cors')
+const swaggerUi = require('swagger-ui-express')
+const client = require('./database')
 
-const app = express();
+const app = express()
 
-app.use(cors());
-app.use(express.json());
+app.use(cors())
+app.use(express.json())
 
-app.use("/users", require("./routes/users"));
-app.use("/login", require("./routes/login"));
-app.use("/boards", require("./routes/boards"));
-app.use("/pins", require("./routes/pins"));
-app.use("/tags", require("./routes/tags"));
-app.use("/pin_tags", require("./routes/pin_tags"));
-app.use("/follows", require("./routes/follows"));
-app.use("/messages", require("./routes/messages"));
+app.use('/users', require('./routes/users'))
+app.use('/login', require('./routes/login'))
+app.use('/boards', require('./routes/boards'))
+app.use('/pins', require('./routes/pins'))
+app.use('/tags', require('./routes/tags'))
+app.use('/pin_tags', require('./routes/pin_tags'))
+app.use('/follows', require('./routes/follows'))
+app.use('/messages', require('./routes/messages'))
 
-app.use("/", swaggerUi.serve);
-app.get("/", swaggerUi.setup(require("./swagger.json")));
+app.use('/', swaggerUi.serve)
+app.get('/', swaggerUi.setup(require('./swagger.json')))
 
-app.get("/all", (req, res) => {
+app.get('/all', (req, res) => {
   client
     .query(
       "SELECT table_name FROM information_schema.tables WHERE table_schema='public'"
     )
     .then((result) => {
-      let allData = {};
+      const allData = {}
 
       result.rows.forEach((table, i) => {
-        allData[table.table_name] = [];
+        allData[table.table_name] = []
 
         client.query(`SELECT * FROM ${table.table_name}`).then((data) => {
-          allData[table.table_name] = data.rows;
+          allData[table.table_name] = data.rows
 
           if (i === result.rows.length - 1) {
-            res.send(allData);
+            res.send(allData)
           }
-        });
-      });
-    });
-});
+        })
+      })
+    })
+})
 
-app.listen(5000);
+app.listen(5000)

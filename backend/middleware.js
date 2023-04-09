@@ -1,25 +1,25 @@
-const dotenv = require("dotenv");
-const jwt = require("jsonwebtoken");
+const dotenv = require('dotenv')
+const jwt = require('jsonwebtoken')
 
-dotenv.config();
+dotenv.config()
 
 const verifyToken = (req, res, next) => {
-  const authorization = req.headers.authorization;
+  const { authorization } = req.headers
 
   if (!authorization) {
-    return res.status(401).send("Unauthorized");
+    res.status(401).send('Unauthorized')
+  } else {
+    const token = authorization.split(' ')[1]
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        res.status(401).send('Unauthorized')
+      } else {
+        req.decoded = decoded
+        next()
+      }
+    })
   }
+}
 
-  const token = authorization.split(" ")[1];
-
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(401).send("Unauthorized");
-    }
-
-    req.decoded = decoded;
-    next();
-  });
-};
-
-module.exports = { verifyToken };
+module.exports = { verifyToken }

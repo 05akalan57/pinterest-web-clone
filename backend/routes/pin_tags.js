@@ -1,12 +1,13 @@
-const express = require("express");
-const router = express.Router();
-const client = require("../database");
+const express = require('express')
+
+const router = express.Router()
+const client = require('../database')
 
 // Get all pin_tags
-router.get("/", (req, res) => {
+router.get('/', (req, res) => {
   client
-    .query("SELECT * FROM pin_tags")
-    .then((pin_tags) => res.send(pin_tags.rows));
-});
+    .query('SELECT * FROM pin_tags')
+    .then((pinTags) => res.send(pinTags.rows))
+})
 
-module.exports = router;
+module.exports = router

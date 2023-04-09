@@ -1,0 +1,30 @@
+version: '2.14.2'
+
+services:
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+  backend:
+    container_name: backend
+    build: ./backend
+    ports:
+      - '5000:5000'
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+  database:
+    container_name: database
+    image: postgres
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres123456
+      - POSTGRES_DB=pinterest-web-clone
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql

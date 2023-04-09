@@ -1,12 +1,13 @@
-const express = require("express");
-const router = express.Router();
-const client = require("../database");
+const express = require('express')
+
+const router = express.Router()
+const client = require('../database')
 
 // Get all follows
-router.get("/", (req, res) => {
+router.get('/', (req, res) => {
   client
-    .query("SELECT * FROM follows")
-    .then((follows) => res.send(follows.rows));
-});
+    .query('SELECT * FROM follows')
+    .then((follows) => res.send(follows.rows))
+})
 
-module.exports = router;
+module.exports = router

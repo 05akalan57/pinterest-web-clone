@@ -1,17 +1,26 @@
-const { Client } = require("pg");
-const dotenv = require("dotenv");
+const { Client } = require('pg')
+const dotenv = require('dotenv')
 
-dotenv.config();
+dotenv.config()
 
-const DB_USER = process.env.DB_USER;
-const DB_PASSWORD = process.env.DB_PASSWORD;
-const DB_HOST = process.env.DB_HOST;
-const DB_PORT = process.env.DB_PORT;
-const DB_NAME = process.env.DB_NAME;
+const { DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME } = process.env
 
-const client = new Client({
-  connectionString: `postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`,
-});
-client.connect();
+const client = () => {
+  const clientInstance = new Client({
+    connectionString: `postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`
+  })
 
-module.exports = client;
+  const interval = setInterval(() => {
+    clientInstance
+      .connect()
+      .then(() => {
+        clearInterval(interval)
+        console.log('Connected to database')
+      })
+      .catch(() => console.log('Failed to connect to database'))
+  }, 5000)
+
+  return clientInstance
+}
+
+module.exports = client()

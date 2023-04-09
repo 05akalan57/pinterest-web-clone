@@ -1,0 +1,25 @@
+{
+  "scripts": {
+    "lint": "eslint .",
+    "format": "prettier --write . '!*/.next'"
+  },
+  "devDependencies": {
+    "eslint": "^8.31.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "prettier": "^2.8.1"
+  },
+  "eslintConfig": {
+    "extends": "airbnb-base",
+    "rules": {
+      "semi": "off",
+      "comma-dangle": "off",
+      "object-curly-newline": "off"
+    }
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "none"
+  }
+}
